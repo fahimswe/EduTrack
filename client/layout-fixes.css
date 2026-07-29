@@ -1,0 +1,5 @@
+.task { grid-template-columns: auto 1fr auto auto auto; }
+
+@media (max-width: 800px) {
+  .task { grid-template-columns: auto 1fr auto auto; }
+}

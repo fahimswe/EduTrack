@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#5b5bd6" />
+    <title>EduTrack · Study smarter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="layout-fixes.css" />
+  </head>
+  <body>
+    <div class="page-glow glow-one"></div><div class="page-glow glow-two"></div>
+    <main class="shell">
+      <header class="topbar">
+        <a class="brand" href="#"><span class="brand-mark">✦</span><span>Edu<span>Track</span></span></a>
+        <div class="user-area"><span id="welcome" class="welcome"></span><button id="logoutBtn" class="text-button hidden">Log out</button></div>
+      </header>
+
+      <section class="hero">
+        <div><p class="eyebrow" id="todayLabel">YOUR STUDY SPACE</p><h1>Make room for<br /><em>what matters.</em></h1><p class="hero-copy">A calm place to see every deadline, plan your next step, and finish your work with confidence.</p></div>
+        <div class="hero-action"><div class="date-card"><span id="dateDay">01</span><div><strong id="dateMonth">JANUARY</strong><small id="dateWeekday">MONDAY</small></div></div><button id="newTaskBtn" class="primary-button"> <span>＋</span> Add a task</button></div>
+      </section>
+
+      <section class="summary-grid" aria-label="Task overview">
+        <article><div class="summary-icon violet">☷</div><div><small>TO DO</small><strong id="todoCount">0</strong><span>tasks waiting</span></div></article>
+        <article><div class="summary-icon coral">◷</div><div><small>DUE SOON</small><strong id="soonCount">0</strong><span>in the next 7 days</span></div></article>
+        <article><div class="summary-icon mint">✓</div><div><small>COMPLETED</small><strong id="doneCount">0</strong><span>nice work!</span></div></article>
+        <article class="progress-card"><div class="ring"><span id="progressValue">0%</span></div><div><small>YOUR PROGRESS</small><strong>Keep going</strong><span id="progressText">Start with one task today.</span></div></article>
+      </section>
+
+      <section class="workspace">
+        <div class="section-heading"><div><p class="eyebrow">YOUR PLAN</p><h2>Tasks at a glance</h2></div><div class="filters" role="group" aria-label="Task filters"><button class="filter active" data-filter="all">All</button><button class="filter" data-filter="today">Today</button><button class="filter" data-filter="upcoming">Upcoming</button><button class="filter" data-filter="completed">Done</button></div></div>
+        <div id="taskList" class="task-list"></div>
+        <div id="emptyState" class="empty-state hidden"><div>✦</div><h3>Your schedule is clear</h3><p>Add your first task and give your future self a little breathing room.</p><button class="primary-button" data-open-task>＋ Add a task</button></div>
+      </section>
+    </main>
+
+    <div id="authOverlay" class="overlay"><section class="auth-card"><div class="auth-art"><span class="brand-mark">✦</span><p class="eyebrow">WELCOME TO EDUTRACK</p><h2>Your goals,<br /><em>in view.</em></h2><p>Build a gentler study routine, one clear task at a time.</p></div><div class="auth-form"><div class="auth-tabs"><button class="auth-tab active" data-auth="login">Sign in</button><button class="auth-tab" data-auth="register">Create account</button></div><form id="authForm"><label id="nameField" class="hidden">Your name<input id="nameInput" type="text" placeholder="e.g. Amina Rahman" /></label><label>Email address<input id="emailInput" type="email" placeholder="you@example.com" required /></label><label>Password<input id="passwordInput" type="password" placeholder="At least 6 characters" minlength="6" required /></label><button id="authSubmit" class="primary-button full-width" type="submit">Sign in to EduTrack</button><p id="authMessage" class="form-message"></p></form></div></section></div>
+
+    <div id="taskModal" class="overlay hidden" aria-hidden="true"><section class="modal"><button class="close-button" data-close-task aria-label="Close">×</button><p class="eyebrow" id="modalEyebrow">NEW TASK</p><h2 id="modalTitle">What needs your attention?</h2><form id="taskForm"><input id="taskId" type="hidden" /><label>Task title<input id="taskTitle" type="text" placeholder="e.g. Finish chapter 4 notes" required /></label><div class="form-row"><label>Subject<input id="taskSubject" type="text" placeholder="e.g. Mathematics" required /></label><label>Due date<input id="taskDate" type="date" required /></label></div><div class="form-row"><label>Priority<select id="taskPriority"><option value="high">High — needs focus</option><option value="medium" selected>Medium — keep moving</option><option value="low">Low — when you can</option></select></label><label>Notes <span class="optional">optional</span><input id="taskNotes" type="text" placeholder="A small reminder" /></label></div><button class="primary-button full-width" type="submit" id="saveTaskBtn">Save task</button><p id="taskMessage" class="form-message"></p></form></section></div>
+    <div id="toast" class="toast"></div>
+    <script src="app.js"></script>
+  </body>
+</html>
