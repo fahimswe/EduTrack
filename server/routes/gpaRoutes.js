@@ -1,6 +1,7 @@
 const express = require("express");
 const multer = require("multer");
-const { parseGpaFile } = require("../controllers/gpaController");
+const { getGpa, saveGpa, parseGpaFile } = require("../controllers/gpaController");
+const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
@@ -30,6 +31,11 @@ const upload = multer({
   },
 });
 
+// MongoDB storage endpoints (requires authentication)
+router.get("/", protect, getGpa);
+router.put("/", protect, saveGpa);
+
+// File parsing endpoint
 router.post("/parse", (req, res, next) => {
   upload.single("file")(req, res, (err) => {
     if (err instanceof multer.MulterError) {

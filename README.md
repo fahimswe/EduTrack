@@ -120,6 +120,9 @@ Authorization: Bearer <JWT_TOKEN>
 | POST | `/api/notes` | Create a note | Yes |
 | PUT | `/api/notes/:id` | Update a note | Yes |
 | DELETE | `/api/notes/:id` | Delete a note | Yes |
+| GET | `/api/gpa` | Get the signed-in user's saved GPA & courses | Yes |
+| PUT | `/api/gpa` | Save/update user's courses and GPA | Yes |
+| POST | `/api/gpa/parse` | Parse grade sheet / transcript (PDF or Image) | No |
 
 ## Data Models
 
@@ -128,6 +131,8 @@ Authorization: Bearer <JWT_TOKEN>
 **Task:** title, subject, due date, priority, notes, completion status, owner
 
 **Note:** title, content, owner
+
+**Gpa:** user (owner), courses (name, credit, grade, label), gpa, totalCredits, totalPoints
 
 ## Contributors
 

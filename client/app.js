@@ -129,7 +129,30 @@ function renderGpa() {
     `;
   }).join("");
 }
-function saveCourses() { localStorage.setItem("edutrack_courses", JSON.stringify(courses)); renderGpa(); }
+function saveCourses() {
+  localStorage.setItem("edutrack_courses", JSON.stringify(courses));
+  renderGpa();
+  if (user) {
+    request("/gpa", {
+      method: "PUT",
+      body: JSON.stringify({ courses }),
+    }).catch((err) => console.error("Failed to save GPA to database:", err.message));
+  }
+}
+
+async function loadGpa() {
+  if (!user) return;
+  try {
+    const data = await request("/gpa");
+    if (data && Array.isArray(data.courses)) {
+      courses = data.courses;
+      localStorage.setItem("edutrack_courses", JSON.stringify(courses));
+      renderGpa();
+    }
+  } catch (error) {
+    console.error("Failed to load GPA:", error);
+  }
+}
 
 async function handleGpaFileUpload(file) {
   if (!file) return;
@@ -188,11 +211,11 @@ async function handleGpaFileUpload(file) {
 }
 
 function setAuthState() { $("#authOverlay").classList.toggle("hidden", Boolean(user)); $("#logoutBtn").classList.toggle("hidden", !user); $("#welcome").textContent = user ? `Hi, ${user.name.split(" ")[0]}` : ""; }
-function logout() { localStorage.removeItem("edutrack_user"); user = null; tasks = []; notes = []; renderTasks(); renderNotes(); setAuthState(); }
-function setView(view) { activeView = view; document.querySelectorAll(".view").forEach((item) => item.classList.toggle("active", item.id === `${view}View`)); document.querySelectorAll(".nav-link").forEach((item) => item.classList.toggle("active", item.dataset.view === view)); if (view === "notes") loadNotes(); }
+function logout() { localStorage.removeItem("edutrack_user"); user = null; tasks = []; notes = []; courses = []; renderTasks(); renderNotes(); renderGpa(); setAuthState(); }
+function setView(view) { activeView = view; document.querySelectorAll(".view").forEach((item) => item.classList.toggle("active", item.id === `${view}View`)); document.querySelectorAll(".nav-link").forEach((item) => item.classList.toggle("active", item.dataset.view === view)); if (view === "notes") loadNotes(); if (view === "gpa") loadGpa(); }
 function setTheme(theme) { document.body.classList.toggle("dark", theme === "dark"); localStorage.setItem("edutrack_theme", theme); $("#themeBtn").textContent = theme === "dark" ? "☀" : "☾"; }
 
-$("#authForm").addEventListener("submit", async (event) => { event.preventDefault(); const button = $("#authSubmit"); button.disabled = true; $("#authMessage").textContent = ""; const payload = { email: $("#emailInput").value.trim(), password: $("#passwordInput").value }; if (authMode === "register") payload.name = $("#nameInput").value.trim(); try { user = await request(`/auth/${authMode}`, { method: "POST", body: JSON.stringify(payload) }); localStorage.setItem("edutrack_user", JSON.stringify(user)); setAuthState(); loadTasks(); showToast(`Welcome, ${user.name.split(" ")[0]}!`); } catch (error) { $("#authMessage").textContent = error.message; } finally { button.disabled = false; button.textContent = authMode === "login" ? "Sign in to EduTrack" : "Create my account"; } });
+$("#authForm").addEventListener("submit", async (event) => { event.preventDefault(); const button = $("#authSubmit"); button.disabled = true; $("#authMessage").textContent = ""; const payload = { email: $("#emailInput").value.trim(), password: $("#passwordInput").value }; if (authMode === "register") payload.name = $("#nameInput").value.trim(); try { user = await request(`/auth/${authMode}`, { method: "POST", body: JSON.stringify(payload) }); localStorage.setItem("edutrack_user", JSON.stringify(user)); setAuthState(); loadTasks(); loadGpa(); showToast(`Welcome, ${user.name.split(" ")[0]}!`); } catch (error) { $("#authMessage").textContent = error.message; } finally { button.disabled = false; button.textContent = authMode === "login" ? "Sign in to EduTrack" : "Create my account"; } });
 $("#taskForm").addEventListener("submit", async (event) => { event.preventDefault(); const id = $("#taskId").value, button = $("#saveTaskBtn"); button.disabled = true; const payload = { title: $("#taskTitle").value.trim(), subject: $("#taskSubject").value.trim(), dueDate: $("#taskDate").value, priority: $("#taskPriority").value, notes: $("#taskNotes").value.trim() }; try { const saved = await request(`/tasks${id ? `/${id}` : ""}`, { method: id ? "PUT" : "POST", body: JSON.stringify(payload) }); tasks = id ? tasks.map((task) => task._id === id ? saved : task) : [...tasks, saved]; tasks.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate)); renderTasks(); closeTask(); showToast(id ? "Task updated." : "Task added to your plan."); } catch (error) { $("#taskMessage").textContent = error.message; } finally { button.disabled = false; } });
 $("#noteForm").addEventListener("submit", async (event) => { event.preventDefault(); const id = $("#noteId").value, button = $("#saveNoteBtn"); button.disabled = true; const payload = { title: $("#noteTitle").value.trim(), content: $("#noteContent").value.trim() }; try { const saved = await request(`/notes${id ? `/${id}` : ""}`, { method: id ? "PUT" : "POST", body: JSON.stringify(payload) }); notes = id ? notes.map((note) => note._id === id ? saved : note) : [saved, ...notes]; renderNotes(); closeNote(); showToast(id ? "Note updated." : "Note saved."); } catch (error) { $("#noteMessage").textContent = error.message; } finally { button.disabled = false; } });
 $("#courseForm").addEventListener("submit", (event) => { event.preventDefault(); const select = $("#courseGrade"), option = select.selectedOptions[0]; courses.push({ name: $("#courseName").value.trim(), credit: Number($("#courseCredit").value), grade: Number(select.value), label: option.textContent }); event.target.reset(); saveCourses(); showToast("Course added."); });
@@ -252,4 +275,4 @@ $("#clearCoursesBtn")?.addEventListener("click", () => {
 });
 
 $("#newTaskBtn").addEventListener("click", () => user ? openTask() : $("#authOverlay").classList.remove("hidden")); $("#newNoteBtn").addEventListener("click", () => user ? openNote() : $("#authOverlay").classList.remove("hidden")); $("#logoutBtn").addEventListener("click", logout); $("#timerStart").addEventListener("click", toggleTimer); $("#timerReset").addEventListener("click", resetTimer); $("#themeBtn").addEventListener("click", () => setTheme(document.body.classList.contains("dark") ? "light" : "dark")); document.querySelectorAll(".filter").forEach((button) => button.addEventListener("click", () => { filter = button.dataset.filter; document.querySelectorAll(".filter").forEach((item) => item.classList.toggle("active", item === button)); renderTasks(); })); document.querySelectorAll(".auth-tab").forEach((button) => button.addEventListener("click", () => { authMode = button.dataset.auth; document.querySelectorAll(".auth-tab").forEach((item) => item.classList.toggle("active", item === button)); $("#nameField").classList.toggle("hidden", authMode === "login"); $("#authSubmit").textContent = authMode === "login" ? "Sign in to EduTrack" : "Create my account"; })); document.querySelectorAll(".nav-link").forEach((button) => button.addEventListener("click", () => setView(button.dataset.view)));
-setToday(); setTheme(localStorage.getItem("edutrack_theme") || "light"); setAuthState(); renderTimer(); renderGpa(); renderNotes(); if (user) loadTasks(); else renderTasks();
+setToday(); setTheme(localStorage.getItem("edutrack_theme") || "light"); setAuthState(); renderTimer(); renderGpa(); renderNotes(); if (user) { loadTasks(); loadGpa(); } else renderTasks();
