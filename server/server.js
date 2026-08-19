@@ -8,6 +8,7 @@ const path = require("path");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const noteRoutes = require("./routes/noteRoutes");
+const gpaRoutes = require("./routes/gpaRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -23,6 +24,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/notes", noteRoutes);
+app.use("/api/gpa", gpaRoutes);
 
 app.get("*splat", (req, res) => {
     res.sendFile(path.join(__dirname, "..", "client", "index.html"));
