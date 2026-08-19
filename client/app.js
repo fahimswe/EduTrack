@@ -114,17 +114,18 @@ function renderGpa() {
     }).join("");
 
     return `
-      <div class="course-row-card">
-        <div class="course-name-cell">
-          <strong>${escapeHtml(course.name)}</strong>
+      <article class="task gpa-task-item">
+        <div class="summary-icon violet" style="width: 32px; height: 32px; font-size: 13px; border-radius: 9px; flex-shrink: 0;">✦</div>
+        <div>
+          <div class="task-title">${escapeHtml(course.name)}</div>
+          <div class="task-meta">${coursePoints} points (${courseCredit} cr × ${courseGrade.toFixed(2)})</div>
         </div>
-        <span class="course-credit-badge">${courseCredit} credits</span>
+        <span class="tag low">${courseCredit} cr</span>
         <select class="course-grade-select" data-change-grade="${index}" aria-label="Change grade">
           ${gradeOptionsHtml}
         </select>
-        <span class="course-points-cell">${coursePoints} pts</span>
         <button class="delete-button" data-delete-course="${index}" aria-label="Remove course">×</button>
-      </div>
+      </article>
     `;
   }).join("");
 }

@@ -31,69 +31,75 @@
       <section id="timerView" class="view"><section class="tool-card timer-card"><p class="eyebrow">POMODORO TIMER</p><h1>Focus, then<br /><em>take a breath.</em></h1><p class="hero-copy">Use a focused 25-minute study session. Pause when needed or reset to begin again.</p><div id="timerDisplay" class="timer-display" aria-live="polite">25:00</div><div class="timer-actions"><button id="timerStart" class="primary-button">Start focus</button><button id="timerReset" class="secondary-button">Reset</button></div><p id="timerStatus" class="timer-status">Ready when you are.</p></section></section>
 
       <section id="gpaView" class="view">
-        <section class="tool-card gpa-card">
-          <div class="view-heading-inline">
-            <div>
-              <p class="eyebrow">AUTOMATIC GPA CALCULATOR</p>
-              <h1>Know where<br /><em>you stand.</em></h1>
-              <p class="hero-copy">Upload your grade sheet or transcript (PDF or Image) to automatically detect courses, credits, and calculate your GPA.</p>
-            </div>
-          </div>
+        <section class="tool-card">
+          <p class="eyebrow">AUTOMATIC GPA CALCULATOR</p>
+          <h1>Know where<br /><em>you stand.</em></h1>
+          <p class="hero-copy">Upload your grade sheet or transcript (PDF or Image) to automatically detect courses, credits, and calculate your GPA.</p>
 
-          <div id="gpaDropZone" class="gpa-dropzone">
-            <div class="dropzone-content">
-              <div class="dropzone-icon">📄</div>
-              <h3>Upload Grade Sheet or Transcript</h3>
-              <p>Drag and drop your file here, or click to browse</p>
-              <span class="file-badges">Supports <strong>PDF</strong>, <strong>PNG</strong>, <strong>JPG</strong>, <strong>WEBP</strong> (up to 10MB)</span>
-              <button type="button" id="browseFileBtn" class="secondary-button dropzone-btn">Browse File</button>
-            </div>
+          <div id="gpaDropZone" class="empty-state gpa-dropzone" style="margin-top: 28px; cursor: pointer;">
+            <div>✦</div>
+            <h3>Upload Grade Sheet or Transcript</h3>
+            <p>Drag and drop your file here, or click to browse</p>
+            <div style="margin-bottom: 16px;"><span class="tag low">PDF, PNG, JPG, WEBP · Max 10MB</span></div>
+            <button type="button" id="browseFileBtn" class="primary-button">Browse file</button>
             <input type="file" id="gpaFileInput" accept=".pdf,image/png,image/jpeg,image/jpg,image/webp" class="hidden" />
           </div>
 
-          <div id="gpaLoading" class="gpa-loading hidden">
-            <div class="spinner"></div>
-            <p id="gpaLoadingText">Parsing document and extracting courses...</p>
-            <small>Analyzing tables, credit hours, and letter grades</small>
+          <div id="gpaLoading" class="empty-state hidden" style="margin-top: 28px;">
+            <div class="ring" style="margin: 0 auto 16px; --progress: 75%;"><span id="gpaProgressValue">✦</span></div>
+            <h3 id="gpaLoadingText">Analyzing document...</h3>
+            <p>Extracting courses, credit hours, and grades</p>
           </div>
 
-          <div class="gpa-stats-grid">
-            <div class="gpa-stat-card gpa-main-stat">
-              <span class="stat-label">Calculated GPA</span>
-              <strong id="gpaValue">0.00</strong>
-              <span class="stat-sub" id="gpaScaleLabel">on 4.00 scale</span>
-            </div>
-            <div class="gpa-stat-card">
-              <span class="stat-label">Total Credits</span>
-              <strong id="gpaCredits">0</strong>
-              <span class="stat-sub">credit hours</span>
-            </div>
-            <div class="gpa-stat-card">
-              <span class="stat-label">Total Points</span>
-              <strong id="gpaPoints">0.00</strong>
-              <span class="stat-sub">grade points</span>
-            </div>
-            <div class="gpa-stat-card">
-              <span class="stat-label">Courses</span>
-              <strong id="gpaCourseCount">0</strong>
-              <span class="stat-sub">detected</span>
-            </div>
-          </div>
-
-          <div class="gpa-courses-section">
-            <div class="gpa-section-header">
+          <section class="summary-grid" style="margin: 28px 0;" aria-label="GPA overview">
+            <article>
+              <div class="summary-icon violet">∑</div>
               <div>
-                <h3>Courses & Grades</h3>
-                <p>Review or adjust any extracted values below.</p>
+                <small>CALCULATED GPA</small>
+                <strong id="gpaValue">0.00</strong>
+                <span id="gpaScaleLabel">on 4.00 scale</span>
               </div>
-              <div class="gpa-action-buttons">
-                <button id="toggleManualFormBtn" class="secondary-button small-btn">＋ Add manually</button>
-                <button id="clearCoursesBtn" class="text-button small-btn danger-text">Clear all</button>
+            </article>
+            <article>
+              <div class="summary-icon coral">◴</div>
+              <div>
+                <small>TOTAL CREDITS</small>
+                <strong id="gpaCredits">0</strong>
+                <span>credit hours</span>
+              </div>
+            </article>
+            <article>
+              <div class="summary-icon mint">✓</div>
+              <div>
+                <small>TOTAL POINTS</small>
+                <strong id="gpaPoints">0.00</strong>
+                <span>grade points</span>
+              </div>
+            </article>
+            <article>
+              <div class="summary-icon violet">☷</div>
+              <div>
+                <small>COURSES</small>
+                <strong id="gpaCourseCount">0</strong>
+                <span>detected</span>
+              </div>
+            </article>
+          </section>
+
+          <section class="workspace" style="margin-top: 36px;">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">YOUR COURSES</p>
+                <h2>Courses & Grades</h2>
+              </div>
+              <div class="filters" role="group" aria-label="GPA course actions">
+                <button id="toggleManualFormBtn" class="filter active">＋ Add course</button>
+                <button id="clearCoursesBtn" class="filter">Clear all</button>
               </div>
             </div>
 
-            <form id="courseForm" class="course-form manual-entry-form hidden">
-              <label>Course Name<input id="courseName" type="text" placeholder="e.g. CSE 4401 Web Engineering" required /></label>
+            <form id="courseForm" class="course-form hidden" style="margin-bottom: 24px;">
+              <label>Course name<input id="courseName" type="text" placeholder="e.g. CSE 4401 Web Engineering" required /></label>
               <label>Credits<input id="courseCredit" type="number" min="0.5" max="20" step="0.5" placeholder="3.0" required /></label>
               <label>Grade
                 <select id="courseGrade" required>
@@ -113,12 +119,13 @@
               <button class="primary-button" type="submit">Add</button>
             </form>
 
-            <div id="courseList" class="course-table-container"></div>
-            <div id="gpaEmptyState" class="gpa-empty-state">
-              <span class="empty-icon">📊</span>
-              <p>No courses added yet. Upload a transcript or grade sheet above to calculate your GPA instantly.</p>
+            <div id="courseList" class="task-list"></div>
+            <div id="gpaEmptyState" class="empty-state" style="margin-top: 14px;">
+              <div>✦</div>
+              <h3>No courses added yet</h3>
+              <p>Upload a transcript or grade sheet above to calculate your GPA instantly.</p>
             </div>
-          </div>
+          </section>
         </section>
       </section>
     </main>
